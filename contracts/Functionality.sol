@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract Functionality {
-    address public systemAccount = 0x43169f86f1A575a8Fa7ceA12E1883E22A848f0F8;
+    address payable systemAccount;// = 0x43169f86f1A575a8Fa7ceA12E1883E22A848f0F8;
 
     mapping(address => User) public users;
     mapping(address => mapping(address => bool)) directPartners;
@@ -39,12 +39,17 @@ contract Functionality {
         return users[msg.sender].level;
     }
 
-    function viewNumberOfDirectPartners() external view returns(uint) {
+    function viewDirectPartnersNumber() external view returns(uint) {
         return users[msg.sender].partnersCount;
     }
 
-    function viewLevelOfDirectPartner(address _partner) external view returns (uint8) {
+    function viewDirectPartnerLevel(address _partner) external view returns (uint8) {
         require(directPartners[msg.sender][_partner], "There is no such partner in your list.");
         return users[_partner].level;
+    }
+
+    function invest() public payable {
+        (bool success,) = systemAccount.call{value: msg.value}("");
+        require(success, "Failed to send money");
     }
 }
